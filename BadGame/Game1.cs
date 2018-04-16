@@ -11,11 +11,29 @@ namespace BadGame
     {
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
+        Texture2D texture;
+        Vector2 position;
 
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
+            position = new Vector2(0, 0);
+            this.IsFixedTimeStep = false;
+            this.graphics.SynchronizeWithVerticalRetrace = true;
+            this.TargetElapsedTime = new System.TimeSpan(0, 0, 0, 0, 33);
+        }
+
+        protected override void OnActivated(object sender, System.EventArgs args)
+        {
+            this.Window.Title = "Active Application";
+            base.OnActivated(sender, args);
+        }
+
+        protected override void OnDeactivated(object sender, System.EventArgs args)
+        {
+            this.Window.Title = "InActive Application";
+            base.OnActivated(sender, args);
         }
 
         /// <summary>
@@ -26,8 +44,6 @@ namespace BadGame
         /// </summary>
         protected override void Initialize()
         {
-            // TODO: Add your initialization logic here
-
             base.Initialize();
         }
 
@@ -40,7 +56,7 @@ namespace BadGame
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            // TODO: use this.Content to load your game content here
+            texture = this.Content.Load<Texture2D>("vampire_lord_bride");
         }
 
         /// <summary>
@@ -59,12 +75,20 @@ namespace BadGame
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
-                Exit();
+            if (IsActive)
+            {
+                if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
+                    Exit();
 
-            // TODO: Add your update logic here
+                position.X += 1;
 
-            base.Update(gameTime);
+                if (position.X > this.GraphicsDevice.Viewport.Width)
+                    position.X = 0;
+
+                // TODO: Add your update logic here
+
+                base.Update(gameTime);
+            }
         }
 
         /// <summary>
@@ -75,7 +99,9 @@ namespace BadGame
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
-            // TODO: Add your drawing code here
+            spriteBatch.Begin();
+            spriteBatch.Draw(texture, position, Color.White);
+            spriteBatch.End();
 
             base.Draw(gameTime);
         }
